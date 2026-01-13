@@ -1,0 +1,21 @@
+import "dotenv/config";
+
+import express from "express";
+import cors from "cors";
+import { connectDB } from "./db/connection.js";
+
+import userRouter from "./routes/userRoutes.js";
+
+const PORT = process.env.PORT || 5050;
+const app = express();
+
+app.use(cors);
+app.use(express.json());
+
+connectDB();
+
+app.use("/", userRouter);
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});

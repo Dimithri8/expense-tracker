@@ -1,13 +1,44 @@
-import { Routes, Route } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 
-import SignUp from "./pages/SignUp/SignUp";
-import Login from "./pages/Login/Login";
+import DashboardCustomizeOutlinedIcon from "@mui/icons-material/DashboardCustomizeOutlined";
+import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
+import FlagCircleOutlinedIcon from "@mui/icons-material/FlagCircleOutlined";
+import CalculateOutlinedIcon from "@mui/icons-material/CalculateOutlined";
+import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
+
+const navigation = [
+  {
+    segment: "overview",
+    title: "Dashboard",
+    icon: <DashboardCustomizeOutlinedIcon />,
+  },
+  {
+    segment: "expenses",
+    title: "Expenses",
+    icon: <MonetizationOnOutlinedIcon />,
+  },
+  {
+    segment: "goals",
+    title: "Goals",
+    icon: <FlagCircleOutlinedIcon />,
+  },
+  {
+    segment: "budget",
+    title: "Budget",
+    icon: <CalculateOutlinedIcon />,
+  },
+  {
+    segment: "analytics",
+    title: "Analytics",
+    icon: <AssessmentOutlinedIcon />,
+  },
+];
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/create-account" element={<SignUp />} />
-    </Routes>
+    <ReactRouterAppProvider navigation={navigation}>
+      <Outlet />
+    </ReactRouterAppProvider>
   );
 }

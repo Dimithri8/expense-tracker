@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import { PageContainer, PageHeaderToolbar } from "@toolpad/core/PageContainer";
 import { useActivePage } from "@toolpad/core/useActivePage";
+import { useMemo, useState } from "react";
+import dayjs from "dayjs";
 
 import AddIcon from "@mui/icons-material/Add";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
@@ -23,9 +25,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 import MetricCard from "../../components/MetricCard/MetricCard";
-import { useMemo, useState } from "react";
+import AddExpenseForm from "../../components/AddExpenseForm/AddExpenseForm";
 
-function CustomPageHeader() {
+function CustomPageHeader({ handleOpen }) {
   const activePage = useActivePage();
   const pageTitle = activePage.title || "Expenses";
   return (
@@ -35,7 +37,7 @@ function CustomPageHeader() {
       <Typography component={"h1"} variant="h1" fontSize={"32px"}>
         {pageTitle}
       </Typography>
-      <Button variant="contained" startIcon={<AddIcon />}>
+      <Button onClick={handleOpen} variant="contained" startIcon={<AddIcon />}>
         Add Expense
       </Button>
     </PageHeaderToolbar>
@@ -44,6 +46,33 @@ function CustomPageHeader() {
 export default function Expenses() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [open, setOpen] = useState(false);
+  const [expense, setExpense] = useState({
+    date: dayjs(),
+    category: "",
+    amount: "",
+    paidVia: "",
+    note: "",
+  });
+  const [expenses, setExpenses] = useState([]);
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setExpense((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    setExpenses((prev) => [...prev, expense]);
+    handleClose(true);
+    setExpense({
+      date: dayjs(),
+      category: "",
+      amount: "",
+      paidVia: "",
+      note: "",
+    });
+  }
   const tableHeaders = [
     "Date",
     "Category",
@@ -52,77 +81,12 @@ export default function Expenses() {
     "Note",
     "Actions",
   ];
-  const tableContent = [
-    {
-      date: "2026-06-15",
-      category: "Groceries",
-      amount: "30",
-      paidVia: "cash",
-      note: "Borrowed 5 bucks from Nate",
-    },
-    {
-      date: "2026-06-15",
-      category: "Groceries",
-      amount: "30",
-      paidVia: "cash",
-      note: "Borrowed 5 bucks from Nate",
-    },
-    {
-      date: "2026-06-15",
-      category: "Groceries",
-      amount: "30",
-      paidVia: "cash",
-      note: "Borrowed 5 bucks from Nate",
-    },
-    {
-      date: "2026-06-15",
-      category: "Groceries",
-      amount: "30",
-      paidVia: "cash",
-      note: "Borrowed 5 bucks from Nate",
-    },
-    {
-      date: "2026-06-15",
-      category: "Groceries",
-      amount: "30",
-      paidVia: "cash",
-      note: "Borrowed 5 bucks from Nate",
-    },
-    {
-      date: "2026-06-15",
-      category: "Groceries",
-      amount: "30",
-      paidVia: "cash",
-      note: "Borrowed 5 bucks from Nate",
-    },
-    {
-      date: "2026-06-15",
-      category: "Groceries",
-      amount: "30",
-      paidVia: "cash",
-      note: "Borrowed 5 bucks from Nate",
-    },
-    {
-      date: "2026-06-15",
-      category: "Groceries",
-      amount: "30",
-      paidVia: "cash",
-      note: "Borrowed 5 bucks from Nate",
-    },
-    {
-      date: "2026-06-15",
-      category: "Groceries",
-      amount: "30",
-      paidVia: "cash",
-      note: "Borrowed 5 bucks from Nate",
-    },
-  ];
 
   const visibleRows = useMemo(() => {
     const start = page * rowsPerPage;
     const end = start + rowsPerPage;
-    return tableContent.slice(start, end);
-  }, [page, rowsPerPage, tableContent]);
+    return expenses.slice(start, end);
+  }, [page, rowsPerPage, expenses]);
 
   function handleChangePage(event, newPage) {
     setPage(newPage);
@@ -131,8 +95,28 @@ export default function Expenses() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   }
+
+  function handleOpen() {
+    setOpen(true);
+  }
+  function handleClose() {
+    setOpen(false);
+  }
   return (
-    <PageContainer slots={{ header: CustomPageHeader }}>
+    <PageContainer
+      slots={{ header: () => <CustomPageHeader handleOpen={handleOpen} /> }}
+    >
+      <AddExpenseForm
+        open={open}
+        handleClose={handleClose}
+        date={expense.date}
+        category={expense.category}
+        amount={expense.amount}
+        paidVia={expense.paidVia}
+        note={expense.note}
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+      />
       <Box sx={{ display: "flex", gap: 2 }}>
         <MetricCard
           title={"Total Expenses"}
@@ -167,7 +151,7 @@ export default function Expenses() {
           <TableBody>
             {visibleRows.map((item) => (
               <TableRow>
-                <TableCell>{item.date}</TableCell>
+                <TableCell>{dayjs(item.date).format("DD/MM/YYYY")}</TableCell>
                 <TableCell>{item.category}</TableCell>
                 <TableCell>{item.amount}</TableCell>
                 <TableCell>{item.paidVia}</TableCell>
@@ -183,7 +167,7 @@ export default function Expenses() {
             <TableRow>
               <TablePagination
                 component={"div"}
-                count={tableContent.length}
+                count={expenses.length}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}

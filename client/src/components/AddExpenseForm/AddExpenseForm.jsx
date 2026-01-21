@@ -2,6 +2,7 @@ import {
   Button,
   Typography,
   Box,
+  Paper,
   Modal,
   TextField,
   InputLabel,
@@ -36,10 +37,10 @@ export default function AddExpenseForm({
         top: "10%",
       }}
     >
-      <Box
+      <Paper
         sx={{
           p: 5,
-          backgroundColor: "black",
+          // backgroundColor: "black",
           borderRadius: 2,
           width: "400px",
         }}
@@ -114,7 +115,7 @@ export default function AddExpenseForm({
             </Button>
           </Box>
         </Box>
-      </Box>
+      </Paper>
     </Modal>
   );
 }

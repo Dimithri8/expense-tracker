@@ -44,10 +44,16 @@ function CustomPageHeader({ handleOpen }) {
   );
 }
 export default function Expenses() {
+  function getRandomNumber(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [open, setOpen] = useState(false);
   const [expense, setExpense] = useState({
+    id: getRandomNumber(1, 100),
     date: dayjs(),
     category: "",
     amount: "",
@@ -102,6 +108,10 @@ export default function Expenses() {
   function handleClose() {
     setOpen(false);
   }
+
+  function handleDelete(itemId) {
+    setExpenses((prev) => prev.filter((item) => item.id !== itemId));
+  }
   return (
     <PageContainer
       slots={{ header: () => <CustomPageHeader handleOpen={handleOpen} /> }}
@@ -150,7 +160,7 @@ export default function Expenses() {
           </TableHead>
           <TableBody>
             {visibleRows.map((item) => (
-              <TableRow>
+              <TableRow key={item.id}>
                 <TableCell>{dayjs(item.date).format("DD/MM/YYYY")}</TableCell>
                 <TableCell>{item.category}</TableCell>
                 <TableCell>{item.amount}</TableCell>
@@ -158,7 +168,10 @@ export default function Expenses() {
                 <TableCell>{item.note}</TableCell>
                 <TableCell>
                   <EditIcon sx={{ mr: 1, cursor: "pointer" }} />{" "}
-                  <DeleteIcon sx={{ cursor: "pointer" }} />
+                  <DeleteIcon
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => handleDelete(item.id)}
+                  />
                 </TableCell>
               </TableRow>
             ))}

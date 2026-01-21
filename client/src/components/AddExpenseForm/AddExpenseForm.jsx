@@ -40,7 +40,6 @@ export default function AddExpenseForm({
       <Paper
         sx={{
           p: 5,
-          // backgroundColor: "black",
           borderRadius: 2,
           width: "400px",
         }}

@@ -23,6 +23,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 import MetricCard from "../../components/MetricCard/MetricCard";
+import { useMemo, useState } from "react";
 
 function CustomPageHeader() {
   const activePage = useActivePage();
@@ -41,6 +42,8 @@ function CustomPageHeader() {
   );
 }
 export default function Expenses() {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const tableHeaders = [
     "Date",
     "Category",
@@ -85,7 +88,49 @@ export default function Expenses() {
       paidVia: "cash",
       note: "Borrowed 5 bucks from Nate",
     },
+    {
+      date: "2026-06-15",
+      category: "Groceries",
+      amount: "30",
+      paidVia: "cash",
+      note: "Borrowed 5 bucks from Nate",
+    },
+    {
+      date: "2026-06-15",
+      category: "Groceries",
+      amount: "30",
+      paidVia: "cash",
+      note: "Borrowed 5 bucks from Nate",
+    },
+    {
+      date: "2026-06-15",
+      category: "Groceries",
+      amount: "30",
+      paidVia: "cash",
+      note: "Borrowed 5 bucks from Nate",
+    },
+    {
+      date: "2026-06-15",
+      category: "Groceries",
+      amount: "30",
+      paidVia: "cash",
+      note: "Borrowed 5 bucks from Nate",
+    },
   ];
+
+  const visibleRows = useMemo(() => {
+    const start = page * rowsPerPage;
+    const end = start + rowsPerPage;
+    return tableContent.slice(start, end);
+  }, [page, rowsPerPage, tableContent]);
+
+  function handleChangePage(event, newPage) {
+    setPage(newPage);
+  }
+  function handleRowsPerPageChange(event) {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  }
   return (
     <PageContainer slots={{ header: CustomPageHeader }}>
       <Box sx={{ display: "flex", gap: 2 }}>
@@ -120,7 +165,7 @@ export default function Expenses() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {tableContent.map((item) => (
+            {visibleRows.map((item) => (
               <TableRow>
                 <TableCell>{item.date}</TableCell>
                 <TableCell>{item.category}</TableCell>
@@ -137,9 +182,13 @@ export default function Expenses() {
           <TableFooter>
             <TableRow>
               <TablePagination
-                rowsPerPage={5}
-                // onPageChange={handleChangePage}
-                // onRowsPerPageChange={handleChangeRowsPerPage}
+                component={"div"}
+                count={tableContent.length}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleRowsPerPageChange}
+                rowsPerPageOptions={[5, 10, 25]}
               />
             </TableRow>
           </TableFooter>
